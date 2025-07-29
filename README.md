@@ -277,6 +277,16 @@ _Run the test suite against all supported python versions._
 $ tox
 ```
 
+## Contributing
+
+1. Create an issue with all necessary details.
+2. Create a branch off from `main`.
+3. Make changes.
+4. Verify tests pass in all supported python versions: `tox`.
+5. Verify code conventions are maintained: `git add --all && pre-commit run -a`.
+6. Create your commit following the [conventionalcommits](https://www.conventionalcommits.org/en/v1.0.0/#summary).
+7. Create a pull request with all necessary details: description, testing notes, resolved issues.
+
 ## Publishing
 
 **Create**
