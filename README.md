@@ -25,10 +25,12 @@ at=WARNING msg="user created" first_name=John last_name=Doe age=25
    2. [Configuration](#configuration)
    3. [Extension](#extension)
    4. [Guides](#guides)
+   5. [Gotchas](#gotchas)
 4. [Development](#development)
    1. [Required Software](#required-software)
    2. [Getting Started](#getting-started)
-   3. [Publishing](#publishing)
+   3. [Contributing](#contributing)
+   4. [Publishing](#publishing)
 
 # Why
 
