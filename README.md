@@ -233,6 +233,26 @@ logging.setLogRecordFactory(record_factory)
 This will cause all logs to have the `trace_id=123` pair regardless of including
 `trace_id` in keys or manually adding `trace_id` to the `extra` parameter or the `msg` object.
 
+## Gotchas
+
+**Reserved Keys**
+
+The standard library logging system restricts the ability to pass internal [log record attributes](https://docs.python.org/3/library/logging.html#logrecord-attributes) via the log call's `extra` parameter.
+
+```py
+> logging.error("invalid", extra={"filename": "alpha.txt"})
+Traceback (most recent call last):
+  ...
+```
+
+This can be circumvented by utilizing logfmter's ability to pass extras
+via the log call's `msg` argument.
+
+```py
+> logging.error({"msg": "valid", "filename": "alpha.txt"})
+at=ERROR msg=valid filename=alpha.txt
+```
+
 # Development
 
 ## Required Software
