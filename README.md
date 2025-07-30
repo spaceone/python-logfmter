@@ -49,6 +49,8 @@ the [standard library logging system](https://docs.python.org/3/howto/logging.ht
 
 ## Integration
 
+This library can be integrated using the standard logging's `basicConfig` or `dictConfig` initialization systems. Examples are provided below.
+
 **[basicConfig](https://docs.python.org/3/library/logging.html#logging.basicConfig)**
 
 ```python
