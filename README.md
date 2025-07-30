@@ -51,7 +51,7 @@ the [standard library logging system](https://docs.python.org/3/howto/logging.ht
 
 ## Integration
 
-This library can be integrated using the standard logging's `basicConfig` or `dictConfig` initialization systems. Examples are provided below.
+Simply use the standard logger's `basicConfig` or `dictConfig` initialization systems to get started. Examples are provided below.
 
 **[basicConfig](https://docs.python.org/3/library/logging.html#logging.basicConfig)**
 
@@ -115,6 +115,10 @@ items after `"()"`:_
 Using logfmter via fileConfig is not supported, because fileConfig does not support custom formatter initialization. There may be some hacks to make this work in the future. Let me know if you have ideas or really need this.
 
 ## Configuration
+
+There is no additional configuration necessary to get started using Logfmter.
+However, if desired, you can modify the functionality using the following
+initialization parameters.
 
 **keys**
 
