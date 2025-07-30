@@ -1,3 +1,12 @@
+# 0.0.10 (2025-07-30)
+
+- Improve support for logging dicts via flattened keys
+- Add test system to verify log parsing by third party tools
+- Add proper escaping of backslashes to fix log consumption by third party
+tools
+- Refactor traceback generation
+- Improve documentation
+
 # 0.0.9 (2025-01-23)
 
 - Resolve pyright lint issue
