@@ -346,3 +346,57 @@ def test_defaults(record):
         ).format(record)
         == "at=INFO func=test_formatter.test_defaults:324 msg=alpha"
     )
+
+
+@pytest.mark.parametrize(
+    "record",
+    [
+        {"msg": "alpha", "levelname": "INFO", "foo": "bar"},
+        {"msg": {"msg": "alpha", "foo": "bar"}, "levelname": "INFO"},
+    ],
+)
+def test_ignore_keys(record):
+    record = logging.makeLogRecord(record)
+    record.attr = "value"
+
+    assert (
+        Logfmter(keys=["at", "attr"], ignore_keys=["foo"]).format(record) == "at=INFO msg=alpha attr=value"
+    )
+    assert (
+        Logfmter(keys=["at", "attr"], ignore_keys=["attr"]).format(record) == "at=INFO msg=alpha foo=bar"
+    )
+    assert (
+        Logfmter(keys=["at", "attr"], ignore_keys=["msg"]).format(record) == "at=INFO foo=bar attr=value"
+    )
+
+
+@pytest.mark.parametrize(
+    "record",
+    [
+        {"msg": "alpha", "levelname": "INFO", "foo": {'key1': 'val1', 'key2': 'val2'}},
+        {"msg": {"msg": "alpha", "foo": {'key1': 'val1', 'key2': 'val2'}}, "levelname": "INFO"},
+    ],
+)
+def test_ignore_keys_nested(record):
+    record = logging.makeLogRecord(record)
+
+    assert (
+        Logfmter(keys=["at"], ignore_keys=[]).format(record) == "at=INFO msg=alpha foo.key1=val1 foo.key2=val2"
+    )
+
+    assert (
+        Logfmter(keys=["at", "foo"], ignore_keys=["foo"]).format(record) == "at=INFO msg=alpha"
+    )
+
+    assert (
+        Logfmter(keys=["at"], ignore_keys=["foo"]).format(record) == "at=INFO msg=alpha"
+    )
+
+    assert (
+        Logfmter(keys=["at"], ignore_keys=["foo.key1"]).format(record) == "at=INFO msg=alpha foo.key2=val2"
+    )
+
+    # https://github.com/josheppinette/python-logfmter/issues/39
+    # assert (
+    #     Logfmter(keys=["at", "foo"], ignore_keys=["foo.key1"]).format(record) == "at=INFO msg=alpha foo.key2=val2"
+    # )
