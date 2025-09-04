@@ -245,7 +245,10 @@ class Logfmter(logging.Formatter):
         if record.exc_info:
             # Cast exc_info to its not null variant to make mypy happy.
             exc_info = cast(ExcInfo, record.exc_info)
+            tokens.append(f"exc_info={self.format_exc_info(exc_info)}")
 
-            tokens.append("exc_info={}".format(self.format_exc_info(exc_info)))
+        if record.stack_info:
+            stack_info = self.formatStack(record.stack_info).rstrip("\n")
+            tokens.append(f"stack_info={self.format_string(stack_info)}")
 
         return " ".join(tokens)
