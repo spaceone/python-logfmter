@@ -24,7 +24,8 @@ at=WARNING msg="user created" first_name=John last_name=Doe age=25
    1. [Integration](#integration)
    2. [Configuration](#configuration)
    3. [Extension](#extension)
-   4. [Gotchas](#gotchas)
+   4. [Guides](#guides)
+   5. [Gotchas](#gotchas)
 4. [Development](#development)
    1. [Required Software](#required-software)
    2. [Getting Started](#getting-started)
@@ -189,7 +190,7 @@ logging.basicConfig(handlers=[handler])
 logging.error("hello") # at=ERROR when=2022-04-20 msg=hello
 ```
 
-**Default Key/Value Pairs**
+**defaults**
 
 Instead of providing key/value pairs at each log call, you can provide defaults:
 
@@ -215,30 +216,7 @@ logging.error("hello") # at=ERROR when=2022-04-20 trace_id=123 msg=hello
 This will cause all logs to have the `trace_id=123` pair regardless of including
 `trace_id` in keys or manually adding `trace_id` to the `extra` parameter or the `msg` object.
 
-Please note that the default value is a format-string.
-
-**Aliases**
-
-Providing a format string as default value allows the realization of aliases.
-
-```py
-import logging
-from logfmter import Logfmter
-
-formatter = Logfmter(
-    keys=["at", "when", "func"],
-    mapping={"at": "levelname", "when": "asctime"},
-    datefmt="%Y-%m-%d",
-    defaults={"func": "{module}.{funcName}:{lineno}"},
-)
-
-handler = logging.StreamHandler()
-handler.setFormatter(formatter)
-
-logging.basicConfig(handlers=[handler])
-
-logging.error("hello") # at=ERROR when=2022-04-20 func="mymodule.__main__:12" msg=hello
-```
+> Note, the defaults object uses format strings as values. This allows for variables templating. See "Aliases" guide for more information.
 
 ## Extension
 
@@ -268,6 +246,31 @@ handler.setFormatter(CustomLogfmter())
 logging.basicConfig(handlers=[handler])
 
 logging.error({"example": True}) # at=ERROR example=yes
+```
+
+## Guides
+
+**Aliases**
+
+Providing a format string as a default's key/value allows the realization of aliases:
+
+```py
+import logging
+from logfmter import Logfmter
+
+formatter = Logfmter(
+    keys=["at", "when", "func"],
+    mapping={"at": "levelname", "when": "asctime"},
+    datefmt="%Y-%m-%d",
+    defaults={"func": "{module}.{funcName}:{lineno}"},
+)
+
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+
+logging.basicConfig(handlers=[handler])
+
+logging.error("hello") # at=ERROR when=2022-04-20 func="mymodule.__main__:12" msg=hello
 ```
 
 ## Gotchas
