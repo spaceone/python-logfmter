@@ -190,6 +190,34 @@ logging.basicConfig(handlers=[handler])
 logging.error("hello") # at=ERROR when=2022-04-20 msg=hello
 ```
 
+**defaults**
+
+Instead of providing key/value pairs at each log call, you can provide defaults:
+
+```py
+import logging
+from logfmter import Logfmter
+
+formatter = Logfmter(
+    keys=["at", "when", "trace_id"],
+    mapping={"at": "levelname", "when": "asctime"},
+    datefmt="%Y-%m-%d",
+    defaults={"trace_id": "123"},
+)
+
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+
+logging.basicConfig(handlers=[handler])
+
+logging.error("hello") # at=ERROR when=2022-04-20 trace_id=123 msg=hello
+```
+
+This will cause all logs to have the `trace_id=123` pair regardless of including
+`trace_id` in keys or manually adding `trace_id` to the `extra` parameter or the `msg` object.
+
+> Note, the defaults object uses format strings as values. This allows for variables templating. See "Aliases" guide for more information.
+
 ## Extension
 
 You can subclass the formatter to change its behavior.
@@ -222,24 +250,28 @@ logging.error({"example": True}) # at=ERROR example=yes
 
 ## Guides
 
-**Default Key/Value Pairs**
+**Aliases**
 
-Instead of providing key/value pairs at each log call, you can override
-the log record factory to provide defaults:
+Providing a format string as a default's key/value allows the realization of aliases:
 
 ```py
-_record_factory = logging.getLogRecordFactory()
+import logging
+from logfmter import Logfmter
 
-def record_factory(*args, **kwargs):
-    record = _record_factory(*args, **kwargs)
-    record.trace_id = 123
-    return record
+formatter = Logfmter(
+    keys=["at", "when", "func"],
+    mapping={"at": "levelname", "when": "asctime"},
+    datefmt="%Y-%m-%d",
+    defaults={"func": "{module}.{funcName}:{lineno}"},
+)
 
-logging.setLogRecordFactory(record_factory)
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+
+logging.basicConfig(handlers=[handler])
+
+logging.error("hello") # at=ERROR when=2022-04-20 func="mymodule.__main__:12" msg=hello
 ```
-
-This will cause all logs to have the `trace_id=123` pair regardless of including
-`trace_id` in keys or manually adding `trace_id` to the `extra` parameter or the `msg` object.
 
 ## Gotchas
 

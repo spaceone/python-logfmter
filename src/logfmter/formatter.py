@@ -37,6 +37,22 @@ RESERVED: Tuple[str, ...] = (
 )
 
 
+class _DefaultFormatter(logging.Formatter):
+    def format(self, record):
+        exc_info = record.exc_info
+        exc_text = record.exc_text
+        stack_info = record.stack_info
+        record.exc_info = None
+        record.exc_text = None
+        record.stack_info = None
+        try:
+            return super().format(record)
+        finally:
+            record.exc_info = exc_info
+            record.exc_text = exc_text
+            record.stack_info = stack_info
+
+
 class Logfmter(logging.Formatter):
     @classmethod
     def format_string(cls, value: str) -> str:
@@ -168,12 +184,17 @@ class Logfmter(logging.Formatter):
         keys: List[str] = ["at"],
         mapping: Dict[str, str] = {"at": "levelname"},
         datefmt: Optional[str] = None,
+        defaults: Optional[Dict[str, str]] = None,
     ):
         self.keys = [self.normalize_key(key) for key in keys]
         self.mapping = {
             self.normalize_key(key): value for key, value in mapping.items()
         }
         self.datefmt = datefmt
+        self.defaults = {
+            key: _DefaultFormatter(value, style="{")
+            for key, value in (defaults or {}).items()
+        }
 
     def format(self, record: logging.LogRecord) -> str:
         # If the 'asctime' attribute will be used, then generate it.
@@ -208,11 +229,12 @@ class Logfmter(logging.Formatter):
             if attribute in params:
                 continue
 
-            # If the attribute doesn't exist on the log record, then skip it.
-            if not hasattr(record, attribute):
+            if hasattr(record, attribute):
+                value = getattr(record, attribute)
+            elif attribute in self.defaults:
+                value = self.defaults[attribute].format(record)
+            else:
                 continue
-
-            value = getattr(record, attribute)
 
             tokens.append("{}={}".format(key, self.format_value(value)))
 

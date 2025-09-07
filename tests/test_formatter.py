@@ -316,3 +316,33 @@ def test_external_tools_compatibility(value):
     assert result.returncode == 0, formatted
     assert len(result.stdout.splitlines()) == 1, formatted
     assert result.stdout.splitlines()[0] == formatted
+
+
+@pytest.mark.parametrize(
+    "record",
+    [
+        {
+            "msg": "alpha",
+            "levelname": "INFO",
+            "funcName": "test_defaults",
+            "module": "test_formatter",
+            "lineno": "324",
+        },
+        {
+            "msg": {"msg": "alpha"},
+            "levelname": "INFO",
+            "funcName": "test_defaults",
+            "module": "test_formatter",
+            "lineno": "324",
+        },
+    ],
+)
+def test_defaults(record):
+    record = logging.makeLogRecord(record)
+
+    assert (
+        Logfmter(
+            keys=["at", "func"], defaults={"func": "{module}.{funcName}:{lineno}"}
+        ).format(record)
+        == "at=INFO func=test_formatter.test_defaults:324 msg=alpha"
+    )
